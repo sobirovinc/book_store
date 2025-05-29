@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Cart Summary</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Here you can get some information</p>
+        </div>
+    </div>
+</header>
+
+{% if cart_products %}
+    {% for product in cart_products %}
+    <br>
+
+    <div class="card w-75 d-flex flex-row align-items-start">
+      <img src="{{ product.image.url }}" alt="Image" class="img-fluid" style="width: 267px;  max-height: 180px; object-fit: cover;">
+      <div class="card-body">
+        <h5 class="card-title">{{ product.name }}</h5>
+          {% if product.is_sale %}
+        <span class="text-muted text-decoration-line-through">${{ product.price }}</span>
+
+        ${{ product.discount_price }}
+
+    {% else %}
+
+          <h4>$ {{ product.price }}</h4>
+
+    {% endif %}
+
+        <div style="display: flex; align-items: center;">
+          <button style="width: 30px; height: 30px; font-size: 20px; text-align: center;" class="decrease-btn" data-id="{{ product.id }}">-</button>
+          <input type="text" class="quantity-input" id="quantity-{{ product.id }}"
+            {% for key, value in quantities.items %}
+                {% if key == product.id|slugify %}
+                    value="{{ value }}"
+                {% endif %}
+            {% endfor %}
+            readonly
+            style="width: 50px; text-align: center; margin: 0 10px;">
+          <button style="width: 30px; height: 30px; font-size: 20px; text-align: center;" class="increase-btn" data-id="{{ product.id }}">+</button>
+        </div>
+
+        <p class="card-text">Description: {{ product.description }}</p>
+          <button class="btn btn-danger delete-product" type="button" data-index="{{ product.id }}"><i class="fa fa-solid fa-trash"></i> Remove item</button>
+        <a href="#" class="btn btn-primary">Button</a>
+      </div>
+    </div>
+    {% endfor %}
+</br>
+</br>
+<h3>Total: $ {{ totals }}</h3>
+{% else %}
+    <br><br>
+    <h1>There is no product yet. <a href="{% url 'store:home' %}">Go shopping</a></h1>
+{% endif %}
+<br><br><br><br>
+
+<script>
+    // UPDATE
+    function updateCart(productId, quantity) {
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart:cart_update" %}',  // Django URL to update the cart
+            data: {
+                product_id: productId,
+                quantity: quantity,
+                csrfmiddlewaretoken: '{{ csrf_token }}',  // CSRF token for Django
+                action: 'post'
+            },
+            success: function(response) {
+                location.reload();
+                console.log("Cart updated successfully");
+                // Optional: Add logic here if you want to display a message or update other UI elements
+            },
+            error: function(xhr, errmsg, err) {
+                console.log("Error updating cart: ", errmsg);
+            }
+        });
+    }
+
+    // Event delegation for increase button
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('increase-btn')) {
+            const productId = e.target.getAttribute('data-id');
+            let quantityInput = document.getElementById('quantity-' + productId);
+            let currentValue = parseInt(quantityInput.value);
+            quantityInput.value = currentValue + 1;
+
+            // Call the function to update the cart with the new quantity
+            updateCart(productId, quantityInput.value);
+        }
+
+        // Event delegation for decrease button
+        if (e.target.classList.contains('decrease-btn')) {
+            const productId = e.target.getAttribute('data-id');
+            let quantityInput = document.getElementById('quantity-' + productId);
+            let currentValue = parseInt(quantityInput.value);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+
+                // Call the function to update the cart with the new quantity
+                updateCart(productId, quantityInput.value);
+            }
+        }
+    });
+
+       // DELETE
+    $(document).on('click', '.delete-product', function(e) {
+    e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart:cart_delete" %}',  // Django URL to update the cart
+            data: {
+                product_id: $(this).data('index'),
+                csrfmiddlewaretoken: '{{ csrf_token }}',  // CSRF token for Django
+                action: 'post'
+            },
+            success: function(response) {
+                console.log("Item deleted successfully");
+                location.reload();
+            },
+            error: function(xhr, errmsg, err) {
+                console.log("Error deleting cart: ", errmsg);
+            }
+        });
+    }
+    )
+</script>
+
+{% endblock content %}

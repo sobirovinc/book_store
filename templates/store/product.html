@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+</br>
+</br>
+</br>
+</br>
+
+<div class="card w-75 d-flex flex-row align-items-start">
+  <img src="{{ product.image.url }}" alt="Image" class="img-fluid" style="width: 300px;  max-height: 250px; object-fit: cover;">
+  <div class="card-body">
+    <h5 class="card-title">{{ product.name }}</h5>
+    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+      {% if product.is_sale %}
+        <span class="text-muted text-decoration-line-through">${{ product.price }}</span>
+
+        ${{ product.discount_price }}
+
+    {% else %}
+
+        ${{ product.price }}
+
+    {% endif %}
+    <div style="display: flex; align-items: center;">
+      <button style="width: 30px; height: 30px; font-size: 20px; text-align: center;" id="decrease">-</button>
+      <input type="text" id="quantity" value="1" readonly
+             style="width: 50px; text-align: center; margin: 0 10px;">
+      <button style="width: 30px; height: 30px; font-size: 20px; text-align: center;" id="increase">+</button>
+    </div>
+
+
+    <div class="text-center">
+        <a class="btn btn-outline-success mt-auto" href="#"><i class="fa-solid fa-heart"></i> Add to saved</a>
+        <button type="button" value="{{ product.id }}" class="btn btn-secondary" id="add-cart">Add to cart</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</br>
+</br>
+</br>
+</br>
+
+<script>
+    // Check if "Add to Cart" button is pressed
+    $(document).on('click', '#add-cart', function(e){
+        e.preventDefault();
+
+        // Get the selected quantity from the input field
+        let quantity = parseInt(document.getElementById('quantity').value);
+
+        // Send an AJAX POST request
+        $.ajax({
+            type: 'POST',
+            url: '{% url 'cart:cart_add' %}',
+            data: {
+                product_id: $('#add-cart').val(),
+                quantity: quantity,  // Include the selected quantity
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+
+            success: function(json){
+                document.getElementById("cart_quantity").textContent = json.qty;
+                location.reload();
+            },
+
+            error: function(xhr, errmsg, err){
+                // Handle error
+            }
+        });
+    });
+
+    // Increase quantity
+    document.getElementById('increase').addEventListener('click', function() {
+        let quantityInput = document.getElementById('quantity');
+        let currentValue = parseInt(quantityInput.value);
+        quantityInput.value = currentValue + 1;
+    });
+
+    // Decrease quantity
+    document.getElementById('decrease').addEventListener('click', function() {
+        let quantityInput = document.getElementById('quantity');
+        let currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    {% block navigation %}
+    {% endblock %}
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">User update</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Here you can change your profile informations...</p>
+        </div>
+    </div>
+</header>
+
+</br>
+</br>
+</br>
+</br>
+
+<div class="d-flex justify-content-center">
+  <form method="post" action="{% url 'store:user_update' %}"> {% csrf_token %}
+
+      {{ form.as_p }}
+        </br>
+        </br>
+
+  <button  type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-block mb-4">Update profile</button>
+
+</form>
+</br>
+</br>
+</div>
+<div class="d-flex justify-content-center">
+    <a href="{% url 'store:info_update' %}" class="btn btn-primary btn-block mb-4">Change shopping info</a>
+</div>
+<div class="d-flex justify-content-center">
+    <a href="{% url 'store:password_update' %}" class="btn btn-primary btn-block mb-4">Change password</a>
+</div>
+
+</br>
+</br>
+</br>
+</br>
+
+{% endblock content %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    {% block navigation %}
+    {% endblock %}
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Login</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Welcome back. We missed you</p>
+        </div>
+    </div>
+</header>
+
+</br>
+</br>
+</br>
+</br>
+
+<div class="d-flex justify-content-center">
+  <form method="post" action="{% url 'store:login' %}"> {% csrf_token %}
+  <!-- Email input -->
+  <div data-mdb-input-init class="form-outline mb-4">
+    <input type="text" class="form-control" name="username" placeholder="Enter your username..."/>
+
+  </div>
+
+  <!-- Password input -->
+  <div data-mdb-input-init class="form-outline mb-4">
+    <input type="password" class="form-control" name="password" placeholder="Enter your password..."/>
+  </div>
+
+  <!-- 2 column grid layout for inline styling -->
+  <div class="row mb-4">
+
+    <div class="col">
+      <!-- Simple link -->
+      <a href="#!">Forgot password?</a>
+    </div>
+  </div>
+
+  <!-- Submit button -->
+  <button  type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Login</button>
+
+  <!-- Register buttons -->
+  <div class="text-center">
+    <p>Not a member? <a href="{% url 'store:user_register' %}">Register</a></p>
+  </div>
+</form>
+</div>
+
+</br>
+</br>
+</br>
+</br>
+
+{% endblock content %}
